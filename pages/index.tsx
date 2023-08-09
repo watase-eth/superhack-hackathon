@@ -1,13 +1,26 @@
-import { Container } from "@chakra-ui/react";
 import { NextPage } from "next";
-import { CourseCard } from "../components/course-card";
-import { TEST_COURSE_ADDRESS } from "../constants/contractAddresses";
+import NavigationHeader from "../components/NavigationHeader";
+import Cta1 from "../components/CallToActionWithAnnotation";
+import Features1 from "../components/FeaturesWithImage";
+import GridList from "../components/GridList";
+import Footer from "../components/Footer";
+import Contact from "../components/Contact";
+import Blobshape from "../components/Blobshape";
+
+//... other imports ...
 
 const Home: NextPage = () => {
   return (
-    <Container maxWidth={"1440px"}>
-      <CourseCard courseContractAddress={TEST_COURSE_ADDRESS} />
-    </Container>
+    <div>
+      <div>
+        <NavigationHeader />
+        <Cta1 />
+        <Features1 />
+        <GridList />
+        <Contact></Contact>
+      </div>
+      <Footer></Footer>
+    </div>
   );
 };
 
