@@ -17,6 +17,7 @@ contract Course {
         uint256 id;
         string name;
         QuizIndex quizzes;
+        string sectionVideoContentIPFS;
     }
 
     Quiz[] public quizzes;
@@ -25,11 +26,20 @@ contract Course {
     mapping(uint256 => Section) public sections;
     address public owner;
     string public courseName;
+    string public courseDescription;
+    string public courseImage;
     uint256 public sectionCount = 0;
     uint256 public totalEnrolledStudents;
 
-    constructor(string memory _courseName, address _owner) {
+    constructor(
+        string memory _courseName, 
+        string memory _courseDescription, 
+        string memory _courseImage,  
+        address _owner
+    ) {
         courseName = _courseName;
+        courseDescription = _courseDescription;
+        courseImage = _courseImage;
         owner = _owner;
     }
 
@@ -38,9 +48,9 @@ contract Course {
         _;
     }
 
-    function addSection(uint256 _sectionId, string memory _name) public onlyOwner {
+    function addSection(uint256 _sectionId, string memory _name, string memory _sectionVideoContentIPFS) public onlyOwner {
         QuizIndex memory quizIndex = QuizIndex(quizzes.length, quizzes.length);
-        sections[_sectionId] = Section(_sectionId, _name, quizIndex);
+        sections[_sectionId] = Section(_sectionId, _name, quizIndex, _sectionVideoContentIPFS);
         sectionCount++;
     }
 

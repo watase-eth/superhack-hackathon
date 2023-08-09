@@ -1,17 +1,19 @@
-import { Button, Card, Flex, Heading, Link, Skeleton, Text } from "@chakra-ui/react";
+import { Container, Flex, Heading, Link, Skeleton, Text } from "@chakra-ui/react";
 import { MediaRenderer, Web3Button, useAddress, useContract, useContractRead } from "@thirdweb-dev/react";
-import { TEST_COURSE_ADDRESS, TEST_COURSE_ADDRESS_2 } from "../constants/contractAddresses";
+import { useRouter } from "next/router";
+import { SectionCard } from "../../../components/section-card";
+import { TEST_COURSE_ADDRESS, TEST_COURSE_ADDRESS_2 } from "../../../constants/contractAddresses";
 
-type Props = {
-    courseContractAddress: string;
-};
+export default function CoursePage() {
+    const router = useRouter();
+    const { courseAddress } = router.query;
+    console.log(courseAddress);
 
-export const CourseCard: React.FC<Props> = ({ courseContractAddress }) => {
     const address = useAddress();
 
     const {
         contract
-    } = useContract(courseContractAddress);
+    } = useContract(courseAddress as string);
 
     const {
         data: courseName
@@ -38,16 +40,7 @@ export const CourseCard: React.FC<Props> = ({ courseContractAddress }) => {
         contract,
         "sectionCount"
     );
-    console.log(sectionCount);
-
-    const {
-        data: totalEnrolledStudents,
-        isLoading: totalEnrolledStudentsLoading
-    } = useContractRead(
-        contract,
-        "totalEnrolledStudents"
-    );
-    console.log(totalEnrolledStudents);
+    console.log("SectionCount: " + sectionCount);
 
     const {
         data: courseImage,
@@ -64,9 +57,9 @@ export const CourseCard: React.FC<Props> = ({ courseContractAddress }) => {
         contract,
         "courseDescription"
     );
-
+    
     return (
-        <Card p={4} maxW={"50%"}>
+        <Container maxWidth={"1440px"}>
             <Flex flexDirection={"row"} justifyContent={"space-between"}>
                 <Heading>{courseName}</Heading>
                 {!isEnrolledLoading ? (
@@ -85,12 +78,17 @@ export const CourseCard: React.FC<Props> = ({ courseContractAddress }) => {
                 src={courseImage}
             />
             <Text>{courseDescription}</Text>
-            <Text>{sectionCount?.toNumber()} Sections</Text>
-            <Text>{totalEnrolledStudents?.toNumber()} Students</Text>
-            <Link href={`/course/${courseContractAddress}/courseDetail`}>
-                <Button>View Course</Button>
-            </Link>
-            
-        </Card>
-    );
+            <Text>Sections:</Text>
+            {Array.from({ length: sectionCount}).map((_,index) => {
+                return (
+                    <SectionCard
+                        key={index}
+                        sectionAddress={courseAddress as string}
+                        sectionId={index + 1} 
+                        isEnrolled={isEnrolled as boolean}
+                    />
+                )
+            })}
+        </Container>
+    )
 };
