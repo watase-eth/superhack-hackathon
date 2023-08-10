@@ -13,6 +13,7 @@ import {
   useColorModeValue,
   useBreakpointValue,
   useDisclosure,
+  Avatar,
 } from "@chakra-ui/react";
 import {
   HamburgerIcon,
@@ -20,9 +21,12 @@ import {
   ChevronDownIcon,
   ChevronRightIcon,
 } from "@chakra-ui/icons";
+import { ConnectWallet, Web3Button, useAddress } from "@thirdweb-dev/react";
+import styles from "../styles/Home.module.css";
 
 export default function NavigationHeader() {
   const { isOpen, onToggle } = useDisclosure();
+  const address = useAddress();
 
   return (
     <Box>
@@ -71,7 +75,7 @@ export default function NavigationHeader() {
           direction={"row"}
           spacing={6}
         >
-          <Button
+          {/* <Button
             as={"a"}
             fontSize={"sm"}
             fontWeight={400}
@@ -93,7 +97,22 @@ export default function NavigationHeader() {
             }}
           >
             Sign Up
-          </Button>
+          </Button> */}
+            <ConnectWallet 
+              theme="light"
+              btnTitle="Sign In"
+              modalTitle="Sign in with email or a wallet"
+              detailsBtn={() => {
+                return (
+                  <Avatar
+                    size="sm"
+                    name="Dan Abrahmov"
+                    src="https://bit.ly/dan-abramov"
+                  />
+                )
+              }}
+              className={styles.signInButton}
+            />
         </Stack>
       </Flex>
 

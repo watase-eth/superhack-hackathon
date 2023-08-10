@@ -1,6 +1,7 @@
 import type { AppProps } from "next/app";
-import { ThirdwebProvider } from "@thirdweb-dev/react";
+import { ThirdwebProvider, coinbaseWallet, localWallet, metamaskWallet, paperWallet, walletConnect } from "@thirdweb-dev/react";
 import { ChakraProvider } from "@chakra-ui/react";
+import NavigationHeader from "../components/NavigationHeader";
 
 // This is the chain your dApp will work on.
 // Change this to the chain your app is built for.
@@ -12,8 +13,18 @@ function MyApp({ Component, pageProps }: AppProps) {
     <ThirdwebProvider
       clientId={process.env.API_CLIENT_ID}
       activeChain={activeChain}
+      supportedWallets={[
+        paperWallet({
+          paperClientId: "3e2462df-afdb-4215-bbf1-e4ac6cddf301",
+        }),
+        metamaskWallet(),
+        coinbaseWallet(),
+        walletConnect(),
+        localWallet()
+      ]}
     >
       <ChakraProvider>
+        <NavigationHeader />
         <Component {...pageProps} />
       </ChakraProvider>
     </ThirdwebProvider>

@@ -13,7 +13,6 @@ const Home: NextPage = () => {
   return (
     <div>
       <div>
-        <NavigationHeader />
         <Cta1 />
         <Features1 />
         <GridList />
