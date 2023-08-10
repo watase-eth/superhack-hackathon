@@ -15,6 +15,7 @@ import {
   useDisclosure,
   Avatar,
   Image,
+  useColorMode,
 } from "@chakra-ui/react";
 import {
   HamburgerIcon,
@@ -26,6 +27,21 @@ import { ConnectWallet, Web3Button, useAddress } from "@thirdweb-dev/react";
 import styles from "../styles/Home.module.css";
 import { TEST_COURSE_ADDRESS } from "../constants/contractAddresses";
 import Link from "next/link";
+import { BsSun, BsMoonStarsFill } from "react-icons/bs";
+
+function ColorModeToggle() {
+  const { colorMode, toggleColorMode } = useColorMode();
+  return (
+    <Button
+      aria-label="Toggle Color Mode"
+      onClick={toggleColorMode}
+      _focus={{ boxShadow: "none" }}
+      w="fit-content"
+    >
+      {colorMode === "light" ? <BsMoonStarsFill /> : <BsSun />}
+    </Button>
+  );
+}
 
 export default function NavigationHeader() {
   const { isOpen, onToggle } = useDisclosure();
@@ -102,21 +118,22 @@ export default function NavigationHeader() {
           >
             Sign Up
           </Button> */}
-            <ConnectWallet 
-              theme="light"
-              btnTitle="Sign In"
-              modalTitle="Sign in with email or a wallet"
-              detailsBtn={() => {
-                return (
-                  <Avatar
-                    size="sm"
-                    name="Dan Abrahmov"
-                    src="https://bit.ly/dan-abramov"
-                  />
-                )
-              }}
-              className={styles.signInButton}
-            />
+          <ColorModeToggle />
+          <ConnectWallet
+            theme="light"
+            btnTitle="Sign In"
+            modalTitle="Sign in with email or a wallet"
+            detailsBtn={() => {
+              return (
+                <Avatar
+                  size="sm"
+                  name="Dan Abrahmov"
+                  src="https://bit.ly/dan-abramov"
+                />
+              );
+            }}
+            className={styles.signInButton}
+          />
         </Stack>
       </Flex>
 
