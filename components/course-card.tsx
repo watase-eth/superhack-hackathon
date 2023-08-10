@@ -1,6 +1,6 @@
-import { Button, Card, Flex, Heading, Link, Skeleton, Text } from "@chakra-ui/react";
+import { Box, Button, Card, Flex, Heading, Link, Skeleton, SkeletonText, Tag, Text } from "@chakra-ui/react";
 import { MediaRenderer, Web3Button, useAddress, useContract, useContractRead } from "@thirdweb-dev/react";
-import { TEST_COURSE_ADDRESS, TEST_COURSE_ADDRESS_2 } from "../constants/contractAddresses";
+import { TEST_COURSE_ADDRESS } from "../constants/contractAddresses";
 
 type Props = {
     courseContractAddress: string;
@@ -14,12 +14,12 @@ export const CourseCard: React.FC<Props> = ({ courseContractAddress }) => {
     } = useContract(courseContractAddress);
 
     const {
-        data: courseName
+        data: courseName,
+        isLoading: courseNameLoading
     } = useContractRead(
         contract,
         "courseName"
     );
-    console.log(courseName);
 
     const {
         data: isEnrolled,
@@ -29,7 +29,6 @@ export const CourseCard: React.FC<Props> = ({ courseContractAddress }) => {
         "enrolledStudents",
         [address]
     );
-    console.log(isEnrolled);
 
     const {
         data: sectionCount,
@@ -38,7 +37,6 @@ export const CourseCard: React.FC<Props> = ({ courseContractAddress }) => {
         contract,
         "sectionCount"
     );
-    console.log(sectionCount);
 
     const {
         data: totalEnrolledStudents,
@@ -47,7 +45,6 @@ export const CourseCard: React.FC<Props> = ({ courseContractAddress }) => {
         contract,
         "totalEnrolledStudents"
     );
-    console.log(totalEnrolledStudents);
 
     const {
         data: courseImage,
@@ -66,31 +63,62 @@ export const CourseCard: React.FC<Props> = ({ courseContractAddress }) => {
     );
 
     return (
-        <Card p={4} maxW={"50%"}>
-            <Flex flexDirection={"row"} justifyContent={"space-between"}>
-                <Heading>{courseName}</Heading>
-                {!isEnrolledLoading ? (
-                    <Web3Button
-                        contractAddress={TEST_COURSE_ADDRESS_2}
-                        action={(contract) => contract.call("enrollStudent")}
-                        isDisabled={isEnrolled}
+        <Card p={4} w={"100%"} mt={10}>
+            <Flex flexDirection={"column"} justifyContent={"space-between"}>
+                <SkeletonText 
+                    isLoaded={!courseNameLoading && !isEnrolledLoading}
+                    fadeDuration={1}
+                >
+                    <Flex flexDirection={"row"} justifyContent={"space-between"} alignItems={"center"} mb={2}>
+                        <Heading fontSize={"2xl"}>{courseName}</Heading>
+                        {!isEnrolledLoading && (
+                            isEnrolled ? (
+                                <Tag size={"md"} variant={"solid"} colorScheme={"green"}>Enrolled</Tag>
+                            ) : (
+                                <Tag size={"md"} variant={"solid"} colorScheme={"red"}>Not Enrolled</Tag>
+                            )
+                        )}
+                    </Flex>
+                </SkeletonText>
+                <Skeleton isLoaded={!courseImageLoading}>
+                    <Box borderRadius={4} overflow={"hidden"}>
+                        <MediaRenderer
+                            src={courseImage}
+                            width="100%"
+                            height="auto"
+                        />
+                    </Box>
+                </Skeleton>
+                <Flex flexDirection={"row"} justifyContent={"flex-start"} alignContent={"center"} my={4}>
+                    <Tag size={"sm"} variant={"outline"} colorScheme={"messenger"}>{sectionCount?.toNumber()} Sections</Tag>
+                    <Tag size={"sm"} variant={"outline"} colorScheme={"messenger"} ml={2}>{totalEnrolledStudents?.toNumber()} Students</Tag>
+                </Flex>
+                <SkeletonText isLoaded={!courseDescriptionLoading}>
+                    <Text fontSize={"sm"} fontWeight={"bold"}>Course Description:</Text>
+                    <Text fontSize={"sm"} mt={2}>{courseDescription}</Text>
+                </SkeletonText>
+                
+                <Flex justifyContent={"space-between"} py={4} alignItems={"baseline"}>
+                    <Link 
+                        href={`/course/${courseContractAddress}`}
                     >
-                        {isEnrolled ? "Joined" : "Enroll"}
-                    </Web3Button>
-                ) : (
-                    <Skeleton h={"10px"} w={"10px"}/>
-                )}
+                        <Button
+                            minW={"100%"}
+                        >View Course</Button>
+                    </Link>
+                    {!isEnrolledLoading && (
+                        !isEnrolled && (
+                            <Web3Button
+                                contractAddress={courseContractAddress as string}
+                                action={(contract) => contract.call(
+                                    "enrollStudent"
+                                )}
+                                isDisabled={isEnrolled}
+                            >Enroll</Web3Button>
+                        )
+                    )}
+                </Flex>
             </Flex>
-            <MediaRenderer
-                src={courseImage}
-            />
-            <Text>{courseDescription}</Text>
-            <Text>{sectionCount?.toNumber()} Sections</Text>
-            <Text>{totalEnrolledStudents?.toNumber()} Students</Text>
-            <Link href={`/course/${courseContractAddress}/courseDetail`}>
-                <Button>View Course</Button>
-            </Link>
-            
         </Card>
     );
 };

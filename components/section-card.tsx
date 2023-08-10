@@ -1,46 +1,64 @@
-import { Card, Flex, Text } from "@chakra-ui/react";
-import { useContract, useContractRead } from "@thirdweb-dev/react";
-import Link from "next/link";
+import { Box, Button, Card, Flex, Link, Tag, Text } from "@chakra-ui/react";
+import { useAddress, useContract, useContractRead } from "@thirdweb-dev/react";
 
 type Props = {
     sectionAddress: string;
     sectionId: number;
-    isEnrolled: boolean;
+    isSectionSelected: boolean;
 };
 
-export const SectionCard: React.FC<Props> = ({ sectionAddress, sectionId, isEnrolled }) => {
+export const SectionCard: React.FC<Props> = ({ sectionAddress, sectionId, isSectionSelected }) => {
+    const address = useAddress();
+
     const {
         contract
     } = useContract(sectionAddress);
 
     const {
-        data: section,
-        isLoading: sectionLoading
+        data: section
     } = useContractRead(
         contract,
         "sections",
-        [sectionId]
+        [sectionId + 1]
     );
-    
-    if(!isEnrolled) {
-        return (
-            <Card
-                backgroundColor={"gray.200"}
-                p={4}
-            >
-                <Text>{section?.name}</Text>
-            </Card>
-        );
-    }
 
+    const {
+        data: isCompleted,
+        isLoading: isCompletedLoading
+    } = useContractRead(
+        contract,
+        "getSectionStatus",
+        [
+            address,
+            sectionId + 1
+        ]
+    );
+    console.log(sectionId + " isCompleted: " + isCompleted);
+    
     return (
-        <Link href={`/course/${sectionAddress}/sections/${sectionId}`}>
-            <Card p={4} mb={4}>
-                <Flex justifyContent={"space-between"} alignItems={"center"}>
-                    <Text>{section?.name}</Text>
-                    <Text>{">"}</Text>
-                </Flex>
-            </Card>
-        </Link>
+        <Box
+            p={4}
+            borderBottom={"1px solid"}
+            _hover={
+                {
+                    cursor: "pointer",
+                    backgroundColor: "gray.100"
+                }
+            }
+        >
+            <Flex flexDirection={"row"} justifyContent={"space-between"} alignItems={"center"}>
+                <Text>{section?.name}</Text>
+                {/* Tag that say is completed if isCompleted is true */}
+                <Tag
+                    size={"xs"}
+                    variant={"outline"}
+                    colorScheme={isCompleted ? "green" : "gray"}
+                    fontSize={"xs"}
+                    p={2}
+                >
+                    {isCompleted ? "Completed" : "Incomplete"}
+                </Tag>
+            </Flex>
+        </Box>
     )
 };
