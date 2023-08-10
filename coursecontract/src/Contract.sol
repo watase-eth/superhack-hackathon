@@ -3,15 +3,18 @@ pragma solidity ^0.8.13;
 
 contract Course {
     struct Quiz {
+        uint256 quizId;
         string question;
         string[] options;
         uint correctAnswerIndex;
     }
 
     struct Section {
-        uint256 id;
+        uint256 sectionId;
         string name;
         string description;
+        string courseVideo;
+        uint256[] quizzes;
     }
 
     mapping(uint256 => Section) public sections;
@@ -39,13 +42,13 @@ contract Course {
         _;
     }
 
-    function addSection(uint256 _sectionId, string memory _name, string memory _description) public onlyOwner {
-        sections[_sectionId] = Section(_sectionId, _name, _description);
+    function addSection(uint256 _sectionId, string memory _name, string memory _description, string memory _courseVideo) public onlyOwner {
+        sections[_sectionId] = Section(_sectionId, _name, _description, _courseVideo, new uint256[](0));
         sectionCount++;
     }
 
-    function addQuizToSection(uint256 _sectionId, string memory _question, string[] memory _options, uint _correctAnswerIndex) public onlyOwner {
-        Quiz memory newQuiz = Quiz(_question, _options, _correctAnswerIndex);
+    function addQuizToSection(uint256 _sectionId, uint256 _quizId, string memory _question, string[] memory _options, uint _correctAnswerIndex) public onlyOwner {
+        Quiz memory newQuiz = Quiz(_quizId, _question, _options, _correctAnswerIndex);
         sectionQuizzes[_sectionId][sectionQuizCounts[_sectionId]] = newQuiz;
         sectionQuizCounts[_sectionId]++;
     }
@@ -61,7 +64,7 @@ contract Course {
 
     function submitQuiz(uint256 _sectionId, uint[] memory _answers) public {
         require(enrolledStudents[msg.sender], "You are not enrolled in this course");
-        require(sections[_sectionId].id != 0, "This section does not exist");
+        require(sections[_sectionId].sectionId != 0, "This section does not exist");
         require(sectionQuizCounts[_sectionId] == _answers.length, "Wrong number of answers");
 
         for (uint i = 0; i < sectionQuizCounts[_sectionId]; i++) {

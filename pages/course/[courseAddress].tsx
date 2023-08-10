@@ -1,5 +1,5 @@
-import { Box, Container, Flex, Heading, SimpleGrid, Skeleton, SkeletonText, Stack, Text } from "@chakra-ui/react";
-import { MediaRenderer, Web3Button, useAddress, useContract, useContractRead } from "@thirdweb-dev/react";
+import { Box, Container, Flex, Heading, Skeleton, SkeletonText, Stack, Tag, Text } from "@chakra-ui/react";
+import { ConnectWallet, MediaRenderer, Web3Button, useAddress, useContract, useContractRead } from "@thirdweb-dev/react";
 import { useRouter } from "next/router";
 import { SectionCard } from "../../components/section-card";
 import { useState } from "react";
@@ -60,18 +60,19 @@ export default function CoursePage() {
             <Flex flexDirection={"row"}>
                 <Box
                     width={"30%"}
-                    height={"95vh"}
+                    height={"auto"}
                     p={10}
                     borderRight={"1px solid black"}
                 >
                     <Stack>
-                        <Web3Button
-                            contractAddress={courseAddress as string}
-                            action={(contract) => contract.call(
-                                "enrollStudent",
-                                [address]
-                            )}
-                        >Enroll</Web3Button>
+                        <ConnectWallet 
+                            theme="light"
+                        />
+                        {isEnrolled ? (
+                            <Tag size={"lg"} variant={"outline"} colorScheme={"green"} my={2}>Enrolled</Tag>
+                        ) : (
+                            <Tag size={"lg"} variant={"outline"} colorScheme={"red"} my={2}>Not Enrolled</Tag>
+                        )}
                         <SkeletonText isLoaded={!courseNameLoading}>
                             <Heading fontSize={"2xl"}>{courseName}</Heading>
                         </SkeletonText>
@@ -86,34 +87,38 @@ export default function CoursePage() {
                         </Skeleton>
                         <Box>
                             <Text fontSize={"lg"} fontWeight={"bold"}>Sections:</Text>
-                        {Array.from({ length: sectionCount}).map((_,index) => {
-                            return (
-                                <Box
-                                    key={index}
-                                    _hover={{
-                                        cursor: "pointer",
-                                        backgroundColor: "gray.300"
-                                    }}
-                                    onClick={() => {
-                                        setSelectedSection(index);
-                                        setIsSectionSelected(true);
-                                    }}
-                                >
-                                    <SectionCard
+                            {Array.from({ length: sectionCount}).map((_,index) => {
+                                return (
+                                    <Box
                                         key={index}
-                                        sectionAddress={courseAddress as string}
-                                        sectionId={index}
-                                        isSectionSelected={isSectionSelected}
-                                    />
-                                </Box>
-                            )
-                        })}
+                                        _hover={{
+                                            cursor: "pointer",
+                                            backgroundColor: "gray.300"
+                                        }}
+                                        onClick={() => {
+                                            setSelectedSection(index);
+                                            setIsSectionSelected(true);
+                                        }}
+                                    >
+                                        <SectionCard
+                                            key={index}
+                                            sectionAddress={courseAddress as string}
+                                            sectionId={index}
+                                            isSectionSelected={isSectionSelected}
+                                        />
+                                    </Box>
+                                )
+                            })}
                         </Box>
+                        <Web3Button
+                            contractAddress={courseAddress as string}
+                            action={() => alert("Minting Certificate")}
+                        >Mint Certificate</Web3Button>
                     </Stack>
                 </Box>
                 <Box
                     width={"100%"}
-                    height={"95vh"}
+                    height={"auto"}
                 >
                     <CourseContent
                         courseAddress={courseAddress as string}

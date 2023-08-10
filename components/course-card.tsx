@@ -104,7 +104,13 @@ export const CourseCard: React.FC<Props> = ({ courseContractAddress }) => {
                     minW={"100%"}
                 >View Course</Button>
             </Link>
-            
+            <Web3Button
+                contractAddress={courseContractAddress as string}
+                action={(contract) => contract.call(
+                    "enrollStudent"
+                )}
+                isDisabled={isEnrolled}
+            >Enroll</Web3Button>
         </Card>
     );
 };

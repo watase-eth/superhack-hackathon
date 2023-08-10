@@ -14,6 +14,7 @@ import {
   useBreakpointValue,
   useDisclosure,
   Avatar,
+  Image,
 } from "@chakra-ui/react";
 import {
   HamburgerIcon,
@@ -23,10 +24,11 @@ import {
 } from "@chakra-ui/icons";
 import { ConnectWallet, Web3Button, useAddress } from "@thirdweb-dev/react";
 import styles from "../styles/Home.module.css";
+import { TEST_COURSE_ADDRESS } from "../constants/contractAddresses";
+import Link from "next/link";
 
 export default function NavigationHeader() {
   const { isOpen, onToggle } = useDisclosure();
-  const address = useAddress();
 
   return (
     <Box>
@@ -61,7 +63,9 @@ export default function NavigationHeader() {
             fontFamily={"heading"}
             color={useColorModeValue("gray.800", "white")}
           >
-            <img src="/images/MintEdLogo.svg" alt="MintEd Logo" />
+            <Link href="/">
+              <Image src="/images/MintEdLogo.svg" alt="MintEd Logo" />
+            </Link>
           </Text>
 
           <Flex display={{ base: "none", md: "flex" }} ml={10}>
@@ -307,7 +311,7 @@ const NAV_ITEMS: Array<NavItem> = [
       {
         label: "Web3 101",
         subLabel: "Find your dream design job",
-        href: "#",
+        href: `/course/${TEST_COURSE_ADDRESS}`,
       },
       {
         label: "Intro to ThirdWeb",

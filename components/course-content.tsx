@@ -1,4 +1,4 @@
-import { Box, Heading } from "@chakra-ui/react";
+import { Box, Heading, Text } from "@chakra-ui/react";
 import { useContract, useContractRead } from "@thirdweb-dev/react";
 import { QuizModal } from "./quiz-modal";
 
@@ -33,6 +33,10 @@ export const CourseContent: React.FC<Props> = ({ courseAddress, sectionId }) => 
             <video width={"100%"} height={"auto"} controls>
                 <source src={`https://gateway.ipfscdn.io/ipfs/${extractHash("ipfs://QmbAxAuR3iRVgVE8K55R7rihG5rYy7iSpmEcwTxhyzwg5Q/demo.mp4")}`} type="video/mp4"/>
             </video>
+            <Box>
+                <Text fontSize={"xl"} fontWeight={"bold"} py={4}>Section Description:</Text>
+                <Text>{section?.description}</Text>
+            </Box>
             <Box mt={4}>
                 <QuizModal sectionAddress={courseAddress} sectionId={(sectionId + 1).toString()}/>
             </Box>
