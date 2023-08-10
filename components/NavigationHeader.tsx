@@ -25,7 +25,7 @@ import {
 } from "@chakra-ui/icons";
 import { ConnectWallet, Web3Button, useAddress } from "@thirdweb-dev/react";
 import styles from "../styles/Home.module.css";
-import { TEST_COURSE_ADDRESS } from "../constants/contractAddresses";
+import { TEST_COURSE_ADDRESS, THIRDWEB_COURSE_ADDRESS } from "../constants/contractAddresses";
 import Link from "next/link";
 import { BsSun, BsMoonStarsFill } from "react-icons/bs";
 
@@ -333,7 +333,7 @@ const NAV_ITEMS: Array<NavItem> = [
       {
         label: "Intro to ThirdWeb",
         subLabel: "An exclusive list for contract work",
-        href: "#",
+        href: `/course/${THIRDWEB_COURSE_ADDRESS}`,
       },
     ],
   },
