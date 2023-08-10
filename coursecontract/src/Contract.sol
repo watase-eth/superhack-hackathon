@@ -14,7 +14,6 @@ contract Course {
         string name;
         string description;
         string courseVideo;
-        uint256[] quizzes;
     }
 
     mapping(uint256 => Section) public sections;
@@ -43,7 +42,7 @@ contract Course {
     }
 
     function addSection(uint256 _sectionId, string memory _name, string memory _description, string memory _courseVideo) public onlyOwner {
-        sections[_sectionId] = Section(_sectionId, _name, _description, _courseVideo, new uint256[](0));
+        sections[_sectionId] = Section(_sectionId, _name, _description, _courseVideo);
         sectionCount++;
     }
 
@@ -76,5 +75,36 @@ contract Course {
 
     function getSectionStatus(address _student, uint256 _sectionId) public view returns (bool) {
         return studentSectionStatus[_student][_sectionId];
+    }
+
+    function getSectionWithQuizzes(uint256 _sectionId) public view returns (
+        uint256 sectionId,
+        string memory name,
+        string memory description,
+        string memory courseVideo,
+        Quiz[] memory quizzes
+    ) {
+        Section storage section = sections[_sectionId];
+        uint256 quizCount = sectionQuizCounts[_sectionId];
+        
+        Quiz[] memory quizzesArray = new Quiz[](quizCount);
+        
+        for (uint256 i = 0; i < quizCount; i++) {
+            Quiz storage quiz = sectionQuizzes[_sectionId][i];
+            quizzesArray[i] = Quiz({
+                quizId: quiz.quizId,
+                question: quiz.question,
+                options: quiz.options,
+                correctAnswerIndex: quiz.correctAnswerIndex
+            });
+        }
+        
+        return (
+            section.sectionId,
+            section.name,
+            section.description,
+            section.courseVideo,
+            quizzesArray
+        );
     }
 }

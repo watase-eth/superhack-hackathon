@@ -19,7 +19,7 @@ export const Question: React.FC<Props> = ({ sectionAddress, sectionId }) => {
         isLoading: totalQuestionsLoading
     } = useContractRead(
         contract,
-        "getQuizCountForSection",
+        "sectionQuizCounts",
         [sectionId]
     );
 
@@ -28,13 +28,13 @@ export const Question: React.FC<Props> = ({ sectionAddress, sectionId }) => {
         isLoading: questionsLoading
     } = useContractRead(
         contract,
-        "getQuizzesForSection",
+        "getSectionWithQuizzes",
         [sectionId]
     );
+    console.log("Question data: " + questions?.quizzes[0].options.length);
 
     const [answers, setAnswers] = useState(Array(totalQuestions).fill(null));
-    console.log(answers);
-    console.log(answers.length);
+    console.log("Answers: " + answers);
 
     const handleAnswerChange = (questionIndex: number, answerIndex: number) => {
         const updatedAnswers = [...answers];
@@ -47,27 +47,25 @@ export const Question: React.FC<Props> = ({ sectionAddress, sectionId }) => {
             {questionsLoading ? (
                 <Spinner />
             ) : (
-                questions.map((question: any, index: number) => {
-                    return(
-                        <Box>
-                            <Text>{question.question}</Text>
-                            <RadioGroup>
+                questions?.quizzes.map((question: any, questionIndex: number) => (
+                    <>
+                        <Text>{question.question}</Text>
+                        <RadioGroup>
                                 <Stack>
-                                    {question.options.map((option: any, optionIndex: number) => {
-                                        return(
+                                    {Array.from({ length: question.options.length }, (_, i) => {
+                                        return (
                                             <Radio
-                                                key={optionIndex}
-                                                name={`question-${index}`}
-                                                value={optionIndex.toString()}
-                                                onChange={() => handleAnswerChange(index, optionIndex)}
-                                            >{option}</Radio>
-                                        )
+                                                key={i}
+                                                name={`question-${i}`}
+                                                value={i.toString()}
+                                                onChange={() => handleAnswerChange(questionIndex, i)}
+                                            >{question.options[i]}</Radio>
+                                        );
                                     })}
                                 </Stack>
                             </RadioGroup>
-                        </Box>
-                    )
-                })
+                    </>
+                ))
             )}
             <Box my={10}>
                 <Web3Button
@@ -83,7 +81,6 @@ export const Question: React.FC<Props> = ({ sectionAddress, sectionId }) => {
                     onSuccess={
                         (result) => {
                             alert("You passed!");
-                            
                         }
                     }
                 >Submit</Web3Button>

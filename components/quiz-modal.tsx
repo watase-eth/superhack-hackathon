@@ -29,20 +29,10 @@ export const QuizModal: React.FC<Props> = ({ sectionAddress, sectionId }) => {
         isLoading: totalQuestionsLoading
     } = useContractRead(
         contract,
-        "getQuizCountForSection",
+        "sectionQuizCounts",
         [sectionId]
     );
     console.log(totalQuestions);
-
-    const {
-        data: questions,
-        isLoading: questionsLoading
-    } = useContractRead(
-        contract,
-        "getQuizzesForSection",
-        [sectionId]
-    );
-    console.log(questions);
 
     const {
         data: sectionStatus,
