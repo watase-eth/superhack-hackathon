@@ -1,5 +1,5 @@
 import { Box, Container, Flex, Heading, SimpleGrid, Skeleton, SkeletonText, Stack, Text } from "@chakra-ui/react";
-import { MediaRenderer, useAddress, useContract, useContractRead } from "@thirdweb-dev/react";
+import { MediaRenderer, Web3Button, useAddress, useContract, useContractRead } from "@thirdweb-dev/react";
 import { useRouter } from "next/router";
 import { SectionCard } from "../../components/section-card";
 import { useState } from "react";
@@ -65,6 +65,13 @@ export default function CoursePage() {
                     borderRight={"1px solid black"}
                 >
                     <Stack>
+                        <Web3Button
+                            contractAddress={courseAddress as string}
+                            action={(contract) => contract.call(
+                                "enrollStudent",
+                                [address]
+                            )}
+                        >Enroll</Web3Button>
                         <SkeletonText isLoaded={!courseNameLoading}>
                             <Heading fontSize={"2xl"}>{courseName}</Heading>
                         </SkeletonText>

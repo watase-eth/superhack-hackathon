@@ -11,6 +11,7 @@ contract Course {
     struct Section {
         uint256 id;
         string name;
+        string description;
     }
 
     mapping(uint256 => Section) public sections;
@@ -23,10 +24,14 @@ contract Course {
     string public courseName;
     uint256 public sectionCount = 0;
     uint256 public totalEnrolledStudents;
+    string public courseDescription;
+    string public courseImage;
 
-    constructor(string memory _courseName, address _owner) {
+    constructor(string memory _courseName, address _owner, string memory _courseDescription, string memory _courseImage) {
         courseName = _courseName;
         owner = _owner;
+        courseDescription = _courseDescription;
+        courseImage = _courseImage;
     }
 
     modifier onlyOwner {
@@ -34,8 +39,8 @@ contract Course {
         _;
     }
 
-    function addSection(uint256 _sectionId, string memory _name) public onlyOwner {
-        sections[_sectionId] = Section(_sectionId, _name);
+    function addSection(uint256 _sectionId, string memory _name, string memory _description) public onlyOwner {
+        sections[_sectionId] = Section(_sectionId, _name, _description);
         sectionCount++;
     }
 
