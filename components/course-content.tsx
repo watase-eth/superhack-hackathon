@@ -1,4 +1,4 @@
-import { Box, Heading, Text } from "@chakra-ui/react";
+import { Box, Heading, Skeleton, Text } from "@chakra-ui/react";
 import { useContract, useContractRead } from "@thirdweb-dev/react";
 import { QuizModal } from "./quiz-modal";
 
@@ -21,8 +21,17 @@ export const CourseContent: React.FC<Props> = ({ courseAddress, sectionId }) => 
         [sectionId + 1]
     );
 
+    const {
+        data: sectionData,
+        isLoading: sectionDataLoading
+    } = useContractRead(
+        contract,
+        "sections",
+        [sectionId + 1]
+    );
+
     function extractHash(ipfsUri: string) {
-        return ipfsUri.replace('ipfs://', '');
+        return ipfsUri?.replace('ipfs://', '');
     }
 
     return (
@@ -30,9 +39,16 @@ export const CourseContent: React.FC<Props> = ({ courseAddress, sectionId }) => 
             p={10}
         >
             <Heading mb={4}>{section?.name}</Heading>
-            <video width={"100%"} height={"auto"} controls>
-                <source src={`https://gateway.ipfscdn.io/ipfs/${extractHash("ipfs://QmbAxAuR3iRVgVE8K55R7rihG5rYy7iSpmEcwTxhyzwg5Q/demo.mp4")}`} type="video/mp4"/>
-            </video>
+            <Skeleton isLoaded={sectionData}>
+                <video 
+                    width={"100%"} 
+                    height={"auto"} 
+                    controls
+                    key={sectionData?.courseVideo}
+                >
+                    <source src={`https://gateway.ipfscdn.io/ipfs/${extractHash(sectionData?.courseVideo)}`} type="video/mp4"/>
+                </video>
+            </Skeleton>
             <Box>
                 <Text fontSize={"xl"} fontWeight={"bold"} py={4}>Section Description:</Text>
                 <Text>{section?.description}</Text>

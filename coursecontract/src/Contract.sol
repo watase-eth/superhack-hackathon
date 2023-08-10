@@ -28,12 +28,14 @@ contract Course {
     uint256 public totalEnrolledStudents;
     string public courseDescription;
     string public courseImage;
+    string public rewardNFTIpfsHash;
 
-    constructor(string memory _courseName, address _owner, string memory _courseDescription, string memory _courseImage) {
+    constructor(string memory _courseName, address _owner, string memory _courseDescription, string memory _courseImage, string memory _rewardNFTIpfsHash) {
         courseName = _courseName;
         owner = _owner;
         courseDescription = _courseDescription;
         courseImage = _courseImage;
+        rewardNFTIpfsHash = _rewardNFTIpfsHash;
     }
 
     modifier onlyOwner {
@@ -106,5 +108,16 @@ contract Course {
             section.courseVideo,
             quizzesArray
         );
+    }
+
+    function hasCompletedAllSectionQuizzes(address _student) public view returns (bool) {
+        require(enrolledStudents[_student], "Student is not enrolled");
+
+        for (uint256 i = 1; i <= sectionCount; i++) { // We assume section IDs start from 1 and are sequential
+            if (!studentSectionStatus[_student][i]) {
+                return false;
+            }
+        }
+        return true;
     }
 }

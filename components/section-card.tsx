@@ -50,9 +50,11 @@ export const SectionCard: React.FC<Props> = ({ sectionAddress, sectionId, isSect
                 <Text>{section?.name}</Text>
                 {/* Tag that say is completed if isCompleted is true */}
                 <Tag
-                    size={"md"}
-                    variant={"solid"}
+                    size={"xs"}
+                    variant={"outline"}
                     colorScheme={isCompleted ? "green" : "gray"}
+                    fontSize={"xs"}
+                    p={2}
                 >
                     {isCompleted ? "Completed" : "Incomplete"}
                 </Tag>

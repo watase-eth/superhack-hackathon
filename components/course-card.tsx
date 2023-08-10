@@ -98,19 +98,23 @@ export const CourseCard: React.FC<Props> = ({ courseContractAddress }) => {
             </SkeletonText>
             <Link 
                 href={`/course/${courseContractAddress}`}
-                mt={4}
+                my={4}
             >
                 <Button
                     minW={"100%"}
                 >View Course</Button>
             </Link>
-            <Web3Button
-                contractAddress={courseContractAddress as string}
-                action={(contract) => contract.call(
-                    "enrollStudent"
-                )}
-                isDisabled={isEnrolled}
-            >Enroll</Web3Button>
+            {!isEnrolledLoading && (
+                !isEnrolled && (
+                    <Web3Button
+                        contractAddress={courseContractAddress as string}
+                        action={(contract) => contract.call(
+                            "enrollStudent"
+                        )}
+                        isDisabled={isEnrolled}
+                    >Enroll</Web3Button>
+                )
+            )}
         </Card>
     );
 };

@@ -1,4 +1,4 @@
-import { Box, Card, Radio, RadioGroup, Spinner, Stack, Text } from "@chakra-ui/react";
+import { Box, Radio, RadioGroup, Spinner, Stack, Text, useToast } from "@chakra-ui/react";
 import { Web3Button, useAddress, useContract, useContractRead } from "@thirdweb-dev/react";
 import { useState } from "react";
 
@@ -9,6 +9,7 @@ type Props = {
 
 export const Question: React.FC<Props> = ({ sectionAddress, sectionId }) => {
     const address = useAddress();
+    const toast = useToast();
     
     const {
         contract
@@ -31,10 +32,20 @@ export const Question: React.FC<Props> = ({ sectionAddress, sectionId }) => {
         "getSectionWithQuizzes",
         [sectionId]
     );
-    console.log("Question data: " + questions?.quizzes[0].options.length);
+
+    const {
+        data: sectionStatus,
+        isLoading: sectionStatusLoading
+    } = useContractRead(
+        contract,
+        "getSectionStatus",
+        [
+            address,
+            sectionId
+        ]
+    );
 
     const [answers, setAnswers] = useState(Array(totalQuestions).fill(null));
-    console.log("Answers: " + answers);
 
     const handleAnswerChange = (questionIndex: number, answerIndex: number) => {
         const updatedAnswers = [...answers];
@@ -44,48 +55,61 @@ export const Question: React.FC<Props> = ({ sectionAddress, sectionId }) => {
 
     return (
         <>
-            {questionsLoading ? (
+            {questionsLoading && sectionStatusLoading ? (
                 <Spinner />
             ) : (
-                questions?.quizzes.map((question: any, questionIndex: number) => (
+                !sectionStatus ? (
                     <>
-                        <Text>{question.question}</Text>
-                        <RadioGroup>
-                                <Stack>
-                                    {Array.from({ length: question.options.length }, (_, i) => {
-                                        return (
-                                            <Radio
-                                                key={i}
-                                                name={`question-${i}`}
-                                                value={i.toString()}
-                                                onChange={() => handleAnswerChange(questionIndex, i)}
-                                            >{question.options[i]}</Radio>
-                                        );
-                                    })}
-                                </Stack>
-                            </RadioGroup>
+                        {questions?.quizzes.map((question: any, questionIndex: number) => (
+                            <>
+                                <Text fontSize={"lg"} fontWeight={"bold"} mt={4}>{question.question}</Text>
+                                <RadioGroup>
+                                    <Stack>
+                                        {Array.from({ length: question.options.length }, (_, i) => {
+                                            return (
+                                                <Radio
+                                                    key={i}
+                                                    name={`question-${i}`}
+                                                    value={i.toString()}
+                                                    onChange={() => handleAnswerChange(questionIndex, i)}
+                                                >{question.options[i]}</Radio>
+                                            );
+                                        })}
+                                    </Stack>
+                                </RadioGroup>
+                            </>
+                        ))}
+                        <Box my={10}>
+                            <Web3Button
+                                contractAddress={sectionAddress}
+                                action={(contract) => contract.call(
+                                    "submitQuiz",
+                                    [
+                                        sectionId,
+                                        answers
+                                    ]
+                                )}
+                                onError={() => toast({
+                                    title: 'Incorrect',
+                                    description: "1 or more of your answers were incorrect. Please try again.",
+                                    status: 'error',
+                                    duration: 9000,
+                                    isClosable: true,
+                                })}
+                                onSuccess={() => toast({
+                                    title: 'Correct',
+                                    description: "All of your answers were correct. You have completed this section.",
+                                    status: 'success',
+                                    duration: 9000,
+                                    isClosable: true,
+                                })}
+                            >Submit</Web3Button>
+                        </Box>
                     </>
-                ))
+                ) : (
+                    <Text fontSize={"lg"} fontWeight={"bold"} mt={4}>You have already completed this section.</Text>
+                )
             )}
-            <Box my={10}>
-                <Web3Button
-                    contractAddress={sectionAddress}
-                    action={(contract) => contract.call(
-                        "submitQuiz",
-                        [
-                            sectionId,
-                            answers
-                        ]
-                    )}
-                    onError={(error) => alert(error.message)}
-                    onSuccess={
-                        (result) => {
-                            alert("You passed!");
-                        }
-                    }
-                >Submit</Web3Button>
-            </Box>
-            
         </>
     );
 };

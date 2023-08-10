@@ -1,20 +1,25 @@
-import { Box, Container, Flex, Heading, Skeleton, SkeletonText, Stack, Tag, Text } from "@chakra-ui/react";
+import { Box, Button, Container, Flex, Heading, Skeleton, SkeletonText, Spinner, Stack, Tag, Text, useToast } from "@chakra-ui/react";
 import { ConnectWallet, MediaRenderer, Web3Button, useAddress, useContract, useContractRead } from "@thirdweb-dev/react";
 import { useRouter } from "next/router";
 import { SectionCard } from "../../components/section-card";
 import { useState } from "react";
 import { CourseContent } from "../../components/course-content";
+import { CERTIFICATE_ADDRESS } from "../../constants/contractAddresses";
 
 export default function CoursePage() {
     const router = useRouter();
     const { courseAddress } = router.query;
-    console.log(courseAddress);
 
     const address = useAddress();
+    const toast = useToast();
 
     const {
         contract
     } = useContract(courseAddress as string);
+
+    const {
+        contract: certificateContract
+    } = useContract(CERTIFICATE_ADDRESS, "signature-drop");
 
     const {
         data: courseName,
@@ -52,8 +57,41 @@ export default function CoursePage() {
         "courseImage"
     );
 
+    const {
+        data: hasCompletedCourse,
+    } = useContractRead(
+        contract,
+        "hasCompletedAllSectionQuizzes",
+        [address]
+    );
+
     const [selectedSection, setSelectedSection] = useState<number>(0);
     const [isSectionSelected, setIsSectionSelected] = useState<boolean>(false);
+
+    const mintCertificate = async () => {
+        try {
+            const signedPayloadReq = await fetch(`../api/server`, {
+                method: "POST",
+                body: JSON.stringify({
+                    claimerAddress: address,
+                    courseAddress: courseAddress
+                })
+            });
+
+            const json = await signedPayloadReq.json();
+
+            if (!signedPayloadReq.ok) {
+                alert(json.error);
+            }
+
+            const signedPayload = json.signedPayload;
+
+            const prize = await certificateContract?.erc721.signature.mint(signedPayload);
+            return prize;
+        } catch (error) {
+            console.log(error);
+        }
+    }; 
     
     return (
         <Container minW={"100%"}>
@@ -61,10 +99,13 @@ export default function CoursePage() {
                 <Box
                     width={"30%"}
                     height={"auto"}
-                    p={10}
+                    p={4}
                     borderRight={"1px solid black"}
                 >
                     <Stack>
+                        <Button
+                            onClick={() => router.push("/")}
+                        >Back</Button>
                         <ConnectWallet 
                             theme="light"
                         />
@@ -110,20 +151,39 @@ export default function CoursePage() {
                                 )
                             })}
                         </Box>
-                        <Web3Button
-                            contractAddress={courseAddress as string}
-                            action={() => alert("Minting Certificate")}
-                        >Mint Certificate</Web3Button>
+                        {hasCompletedCourse && (
+                            <Web3Button
+                                contractAddress={courseAddress as string}
+                                action={() => mintCertificate()}
+                                onSuccess={() => toast({
+                                    title: "Certificate Minted!",
+                                    description: "You have successfully minted your certificate!",
+                                    status: "success",
+                                    duration: 3000,
+                                    isClosable: true,
+                                })}
+                            >Mint Certificate</Web3Button>
+                        )}
                     </Stack>
                 </Box>
                 <Box
                     width={"100%"}
                     height={"auto"}
                 >
-                    <CourseContent
-                        courseAddress={courseAddress as string}
-                        sectionId={selectedSection}
-                    />
+                    <Flex h={"100%"} justifyContent={"center"} alignItems={"center"}>
+                        {isEnrolledLoading ? (
+                            <Spinner />
+                        ) : (
+                            isEnrolled ? (
+                                <CourseContent
+                                    courseAddress={courseAddress as string}
+                                    sectionId={selectedSection}
+                                />
+                            ) : (
+                                <Tag size={"lg"} variant={"solid"} colorScheme={"red"}>Enroll in the course to view content</Tag>
+                            )
+                        )}
+                    </Flex>
                 </Box>
             </Flex>
         </Container>
