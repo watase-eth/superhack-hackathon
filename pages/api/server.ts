@@ -1,6 +1,7 @@
 import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 import { NextApiRequest, NextApiResponse } from "next";
 import { CERTIFICATE_ADDRESS } from "../../constants/contractAddresses";
+import { AwsSecretsManagerWallet } from "@thirdweb-dev/wallets/evm/wallets/aws-secrets-manager";
 
 export default async function server(
     req: NextApiRequest,
@@ -9,12 +10,20 @@ export default async function server(
     try {
         const { claimerAddress, courseAddress } = JSON.parse(req.body);
 
-        if(!process.env.PRIVATE_KEY){
-            throw new Error("No private key found.")
-        }
+        const wallet = new AwsSecretsManagerWallet({
+            secretId: "arn:aws:secretsmanager:us-east-2:030936188165:secret:private-key-2WQCvf", // ID of the secret value
+            secretKeyName: "PRIVATE_KEY", // Name of the secret value
+            awsConfig: {
+              region: "us-east-2", // Region where your secret is stored
+              credentials: {
+                accessKeyId: process.env.AWS_ACCESS_KEY_ID as string, // Add environment variables to store your AWS credentials
+                secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string, // Add environment variables to store your AWS credentials
+              },
+            },
+          });
 
-        const sdk = ThirdwebSDK.fromPrivateKey(
-            process.env.PRIVATE_KEY,
+        const sdk = await ThirdwebSDK.fromWallet(
+            wallet, // Use the retrieved secret key here
             "base-goerli",
             {
                 secretKey: "OFvHAbeL87x_V0EJxaXGK0zwyCc37dj27sENNl4Cpfd1_Rp-oejR3JzrFGPG1n59dGpzpLkG-W8fCwr0XBzkiw",

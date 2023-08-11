@@ -144,7 +144,7 @@ const Home: NextPage = () => {
             </Flex>
           </Card>
           <Heading>Courses:</Heading>
-          <SimpleGrid columns={4} spacing={10}>
+          <SimpleGrid columns={{ base: 4, md: 3, sm: 1}} spacing={10}>
             {Array.from({ length: MINTED_COURSE_CONTRACTS.length }, (_, i) => {
               return (
                 <CourseCard

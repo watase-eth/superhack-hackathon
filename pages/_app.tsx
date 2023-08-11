@@ -19,7 +19,7 @@ const activeChain = "base-goerli";
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ThirdwebProvider
-      clientId={process.env.NEXT_PUBLIC_TEMPLATE_CLIENT_ID}
+      clientId="a87dfb88e7bd139a1663fbd42823696e"
       activeChain={activeChain}
       supportedWallets={[
         paperWallet({
@@ -28,16 +28,22 @@ function MyApp({ Component, pageProps }: AppProps) {
         metamaskWallet(),
         coinbaseWallet(),
         walletConnect(),
-        localWallet(),
       ]}
+      // sdkOptions={{
+      //   gasless: {
+      //     openzeppelin: {
+      //       relayerUrl: "https://api.defender.openzeppelin.com/autotasks/5ab20b46-200c-44cc-8d8e-98277bd098d6/runs/webhook/f50c489e-27b7-4e2a-a791-5b193a3b072f/Aibhpw6Fbfn3iWfNgpcZyM",
+      //       relayerForwarderAddress: "0xd04f98c88ce1054c90022ee34d566b9237a1203c",
+      //     }
+      //   }
+      // }}      
     >
       <ChakraProvider>
         <NavigationHeader />
         <Flex direction="column" minH="100vh">
-          <Flex as="main" flex="1">
+          <Flex as="main" flex="1" justifyContent={"center"}>
             <Component {...pageProps} />
           </Flex>
-
           <Footer />
         </Flex>
       </ChakraProvider>
