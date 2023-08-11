@@ -1,6 +1,13 @@
 import type { AppProps } from "next/app";
-import { ThirdwebProvider, coinbaseWallet, localWallet, metamaskWallet, paperWallet, walletConnect } from "@thirdweb-dev/react";
-import { ChakraProvider } from "@chakra-ui/react";
+import {
+  ThirdwebProvider,
+  coinbaseWallet,
+  localWallet,
+  metamaskWallet,
+  paperWallet,
+  walletConnect,
+} from "@thirdweb-dev/react";
+import { ChakraProvider, Flex } from "@chakra-ui/react";
 import NavigationHeader from "../components/NavigationHeader";
 import Footer from "../components/Footer";
 
@@ -21,13 +28,18 @@ function MyApp({ Component, pageProps }: AppProps) {
         metamaskWallet(),
         coinbaseWallet(),
         walletConnect(),
-        localWallet()
+        localWallet(),
       ]}
     >
       <ChakraProvider>
         <NavigationHeader />
-        <Component {...pageProps} />
-        <Footer></Footer>
+        <Flex direction="column" minH="100vh">
+          <Flex as="main" flex="1">
+            <Component {...pageProps} />
+          </Flex>
+
+          <Footer />
+        </Flex>
       </ChakraProvider>
     </ThirdwebProvider>
   );
