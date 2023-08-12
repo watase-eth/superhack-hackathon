@@ -1,5 +1,4 @@
-import Head from "next/head";
-import {
+import Head from "next/head";import {
   Box,
   Heading,
   Container,
@@ -25,7 +24,7 @@ export default function CallToActionWithAnnotation() {
         >
           <Blobshape
             position="absolute"
-            w={"600%`"}
+            w={"600%"}
             h={"600"}
             top={0}
             left={-6}
@@ -46,7 +45,7 @@ export default function CallToActionWithAnnotation() {
           <Text color={"gray.500"}>
             Discover MintEd, where learning evolves. Delve into cutting-edge
             courses and, as you grow, solidify your achievements with exclusive
-            NFT certificates. In our world, knowledge isn't just power—it's an
+            NFT certificates. In our world, knowledge isn&apos;t just power—it&apos;s an
             asset you can mint. Join the future of education; learn, earn, and
             mint with MintEd
           </Text>
@@ -90,3 +89,4 @@ const Arrow = createIcon({
     />
   ),
 });
+

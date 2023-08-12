@@ -34,11 +34,11 @@ export default async function server(
 
         const courseContract = await sdk.getContract(courseAddress);
 
-        const courseName = await courseContract.call("courseName");
+        const courseName = await (courseContract.call as any)("courseName");
 
-        const certificateImageIPFS = await courseContract.call("rewardNFTIpfsHash");
+        const certificateImageIPFS = await (courseContract.call as any)("rewardNFTIpfsHash");
 
-        const hasCompletedCourse = await courseContract.call("hasCompletedAllSectionQuizzes", [claimerAddress]);
+        const hasCompletedCourse = await (courseContract.call as any)("hasCompletedAllSectionQuizzes", [claimerAddress]);
 
         if(!hasCompletedCourse){
             throw new Error("User has not completed the course.");
