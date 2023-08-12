@@ -69,4 +69,4 @@ A: No, MintEd's NFT certificates are soul-bound and non-transferable, ensuring t
 
 ## Copyright and Licensing ©
 
-MintEd operates under the [MIT License]. All rights reserved.
+MintEd operates under the [MIT License]. All rights reserved. 
