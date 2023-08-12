@@ -2,7 +2,6 @@ import type { AppProps } from "next/app";
 import {
   ThirdwebProvider,
   coinbaseWallet,
-  localWallet,
   metamaskWallet,
   paperWallet,
   walletConnect,
@@ -33,7 +32,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       //   gasless: {
       //     openzeppelin: {
       //       relayerUrl: "https://api.defender.openzeppelin.com/autotasks/5ab20b46-200c-44cc-8d8e-98277bd098d6/runs/webhook/f50c489e-27b7-4e2a-a791-5b193a3b072f/Aibhpw6Fbfn3iWfNgpcZyM",
-      //       relayerForwarderAddress: "0xd04f98c88ce1054c90022ee34d566b9237a1203c",
+      //       relayerForwarderAddress: "0x5001A14CA6163143316a7C614e30e6041033Ac20",
       //     }
       //   }
       // }}      
@@ -41,11 +40,11 @@ function MyApp({ Component, pageProps }: AppProps) {
       <ChakraProvider>
         <NavigationHeader />
         <Flex direction="column" minH="100vh">
-          <Flex as="main" flex="1" justifyContent={"center"}>
+          <Flex as="main" justifyContent={"center"}>
             <Component {...pageProps} />
           </Flex>
-          <Footer />
         </Flex>
+        <Footer />
       </ChakraProvider>
     </ThirdwebProvider>
   );

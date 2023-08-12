@@ -64,9 +64,9 @@ const Home: NextPage = () => {
   return (
     <>
       {address ? (
-        <Container minW={"100%"} p={10} h={"100vh"}>
+        <Container minW={"100%"} p={10}>
           <Card p={10} mb={10} boxShadow="lg">
-            <Flex flexDirection={"row"}>
+            <Flex flexDirection={{ md: "row", sm: "column"}}>
               <Flex borderRadius={8} overflow={"hidden"} w={"30%"}>
                 <Box>
                   <MediaRenderer src={courseImage} width="100%" height="100%" />
